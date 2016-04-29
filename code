@@ -1,0 +1,157 @@
+import java.util.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+public class Chooseandcalculate {
+
+	/**
+	 * @param args
+	 
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Scanner sc=new Scanner(System.in);
+		int N = sc.nextInt();
+		int K= sc.nextInt();
+		int [] A = new int[N];
+		int [] B = new int[N];
+		for(int i=0;i<N;i++){
+			A[i]=sc.nextInt();
+		    B[i]=A[i];
+		}
+		Arrays.sort(B);
+		int result=0;
+		//int count=0;
+		
+		for(int i=N-1;i>=K-1;i--)
+		{
+		for(int j=i-(K-1);j>=0;j--)
+		{
+			result+=(findcomb((i-j-1),K-2)*(B[i]-B[j]))%1000000007;
+			
+		}
+	}
+		System.out.println(result);
+		}
+
+	private static int findcomb(int i, int j) {
+		// TODO Auto-generated method stub
+		return permutation(i) / (permutation(j) * permutation(i - j));
+		//return 0;
+	}
+
+	private static int permutation(int i) {
+		// TODO Auto-generated method stub
+		 if (i == 1 || i == 0)
+		    {
+		        return 1;
+		    }
+		    return i * permutation(i - 1);
+		//return 0;
+	}*/
+private static final long mod = 1000000007;
+	
+	public static void main(String[] args)  {
+		Scanner sc = new Scanner(System.in);
+		
+		int N = sc.nextInt();
+		int K = sc.nextInt();
+		int[] A = new int[N];
+		for (int i = 0; i < N; i++) {
+			A[i] = sc.nextInt();
+		}
+		Arrays.sort(A);
+		long result=findresult(N,K,A);
+		
+		System.out.println(result);
+		
+		sc.close();
+	}
+	
+	private static long findresult(int n, int k, int[] A) {
+		assert(0 < k);
+		assert(k <= n);
+		assert(A.length == n);
+		
+		long[] combarray = findcomb(k-1, n, k-1);
+		
+		for (int i = 0; i < n; i++) {
+			A[i] %= mod;
+		}
+		
+		long res = 0;
+		
+	
+		for (int i = k-1; i < n; i++) {
+			res += A[i] * combarray[i-(k-1)];
+			res %= mod;
+		}
+		
+		
+		for (int i = 0; i < n-(k-1); i++) {
+			res -= A[i] * combarray[(n-(i+1))-(k-1)];
+			res %= mod;
+			if (res < 0) {
+				res += mod;
+			}
+		}
+		
+		res %= mod;
+		return res;
+	}
+	
+	
+	private static long[] findcomb(int p, int q, int k) {
+		assert(0 <= k);
+		assert(k <= p);
+		assert(p <= q);
+		
+		long[] result = new long[q+1-p];
+		
+		long factorial = 1;
+		for (long i = 1; i <= k; i++) {
+			factorial *= i;
+			factorial %= mod;
+		}
+		long factorial_inverse = findinversefactorial(factorial);
+		
+		long d = 1;
+		for (int i = p + 1 - k; i <= p; i++) {
+			d *= i;
+			d %= mod;
+		}
+		result[0] = (d * factorial_inverse) % mod;
+		
+		int i = 1;
+		for (int n = p+1; n <= q; n++) {
+			d *= n;
+			d %= mod;
+			d *= findinversefactorial(n-k);
+			d %= mod;
+			result[i] = (d * factorial_inverse) % mod;
+			i++;
+		}
+		
+		return result;
+	}
+	
+	private static long findinversefactorial(long n) {
+		assert(n > 0);
+		assert(n % mod != 0);
+		
+		long X = n % mod, r = mod;
+		long Y = 1, s = 0;
+		while (r != 0) {
+			long q = X / r;
+			long X1 = X - q * r;
+			long Y1 = Y - q * s;
+			
+			X = r;
+			r = X1;
+			Y = s;
+			s = Y1;
+		}
+		
+		assert(X == 1);
+		return (Y < 0) ? (Y + mod) : Y;
+	}
+
+}
